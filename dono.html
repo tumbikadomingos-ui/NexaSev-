@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NexaServ — Meu perfil</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f6f7f9;color:#111827}button,input,textarea,select{font:inherit}button{cursor:pointer}
+header{background:#111827;color:#fff;padding:14px 18px;position:sticky;top:0;z-index:5}.nav{max-width:1050px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}.logo{font-size:24px;font-weight:900;color:#fff}.logo span{color:#f59e0b}.nav button{border:0;border-radius:9px;padding:10px 14px;font-weight:800;background:#fff;color:#111827}
+main{max-width:900px;margin:auto;padding:25px 15px 60px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}.top h1{margin:0;font-size:27px}.muted{color:#667085}.card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 2px 12px #0000000d;margin-bottom:18px}.card h2{margin:0 0 16px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.field{margin-bottom:15px}.field.full{grid-column:1/-1}.field label{display:block;font-weight:800;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:13px;border:1px solid #d9dee7;border-radius:10px;background:#fff;outline:none}.field textarea{resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:#f59e0b}.primary{border:0;background:#111827;color:#fff;border-radius:10px;padding:13px 18px;font-weight:800}.secondary{border:1px solid #d9dee7;background:#fff;color:#111827;border-radius:10px;padding:12px 16px;font-weight:800}.danger{border:0;background:#fee4e2;color:#b42318;border-radius:9px;padding:9px 12px;font-weight:800}.msg{margin-top:12px;color:#b42318;line-height:1.4}.ok{color:#067647}.profile-summary{display:flex;justify-content:space-between;align-items:center;gap:15px}.tag{display:inline-block;background:#fff4d6;color:#8a5b00;border-radius:20px;padding:6px 10px;font-size:13px;font-weight:800}.summary-name{font-size:23px;font-weight:900;margin:8px 0}.actions{display:flex;gap:8px;flex-wrap:wrap}.service-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid #eee}.service-row:last-child{border-bottom:0}.service-name{font-weight:800}.media-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.media-item{position:relative;border-radius:10px;overflow:hidden;background:#eee;aspect-ratio:1}.media-item img,.media-item video{width:100%;height:100%;object-fit:cover}.media-delete{position:absolute;right:6px;top:6px;border:0;border-radius:50%;width:30px;height:30px;background:#fff;color:#b42318;font-weight:900}.media-buttons{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.upload-label{display:inline-block;background:#f2f4f7;padding:11px 14px;border-radius:10px;font-weight:800;cursor:pointer}.upload-label input{display:none}.empty{padding:15px 0;color:#667085}.hidden{display:none!important}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.profile-summary{align-items:flex-start;flex-direction:column}.media-grid{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="logo">Nexa<span>Serv</span></div><button onclick="goHome()">← Página principal</button></div></header>
+<main>
+<div class="top"><div><h1>Meu painel</h1><div class="muted">Aqui podes criar e manusear o teu perfil profissional.</div></div><button class="secondary" onclick="logout()">Sair</button></div>
+
+<section id="loading" class="card"><strong>A carregar a tua conta...</strong></section>
+
+<section id="createBox" class="card hidden">
+<h2>Criar meu perfil profissional</h2><p class="muted">Preenche os dados que aparecerão na página pública do teu serviço.</p>
+<div class="grid">
+<div class="field"><label>Nome / Nome profissional</label><input id="pName" placeholder="Ex.: Hamilton Construções"></div>
+<div class="field"><label>Serviço principal</label><select id="pCat"><option>Construção</option><option>Canalização</option><option>Eletricidade</option><option>Pintura</option><option>Carpintaria</option><option>Limpeza</option><option>Tecnologia</option><option>Automóveis</option><option>Outro</option></select></div>
+<div class="field"><label>Localização</label><input id="pLoc" placeholder="Ex.: Lubango"></div>
+<div class="field"><label>Telefone / WhatsApp</label><input id="pPhone" placeholder="Ex.: 947212825"></div>
+<div class="field full"><label>Descrição</label><textarea id="pDesc" rows="5" placeholder="Descreva os seus serviços"></textarea></div>
+</div><button class="primary" onclick="createProfile()">Publicar meu perfil</button><div id="createMsg" class="msg"></div>
+</section>
+
+<section id="manageBox" class="hidden">
+<div class="card"><div class="profile-summary"><div><span class="tag" id="viewCat">Serviços</span><div class="summary-name" id="viewName">Profissional</div><div class="muted" id="viewLoc">📍 Angola</div><div class="muted" id="viewViews">👁️ 0 visualizações</div></div><div class="actions"><button class="secondary" onclick="openPublicProfile()">Ver meu perfil</button><button class="secondary" onclick="shareMyService()">Partilhar meu serviço</button></div></div></div>
+
+<div class="card"><h2>Editar perfil</h2><div class="grid">
+<div class="field"><label>Nome / Nome profissional</label><input id="eName"></div>
+<div class="field"><label>Serviço principal</label><select id="eCat"><option>Construção</option><option>Canalização</option><option>Eletricidade</option><option>Pintura</option><option>Carpintaria</option><option>Limpeza</option><option>Tecnologia</option><option>Automóveis</option><option>Outro</option></select></div>
+<div class="field"><label>Localização</label><input id="eLoc"></div><div class="field"><label>Telefone / WhatsApp</label><input id="ePhone"></div>
+<div class="field full"><label>Descrição</label><textarea id="eDesc" rows="5"></textarea></div></div><button class="primary" onclick="saveProfile()">Guardar alterações</button><div id="editMsg" class="msg"></div></div>
+
+<div class="card"><h2>Meus serviços</h2><p class="muted">Escolhe um serviço da lista ou adiciona manualmente um serviço que não esteja nela.</p><div class="actions" style="align-items:stretch"><select id="serviceSelect" onchange="toggleManualService()" style="flex:1;min-width:200px;padding:12px;border:1px solid #d9dee7;border-radius:10px;background:#fff"><option value="">Selecionar serviço...</option><option>Instalação de teto falso</option><option>Pladur</option><option>Canalização</option><option>Eletricidade</option><option>Pintura</option><option>Carpintaria</option><option>Limpeza</option><option>Reparação de computadores</option><option>Manutenção de ar condicionado</option><option value="manual">✏️ Adicionar manualmente</option></select><button class="primary" onclick="addService()">Adicionar</button></div><input id="serviceManual" class="hidden" style="width:100%;margin-top:10px;padding:12px;border:1px solid #d9dee7;border-radius:10px" placeholder="Escreva o nome do serviço"><div id="servicesList" class="empty">A carregar...</div></div>
+
+<div class="card"><h2>Fotos e vídeos</h2><p class="muted">Podes adicionar quantas fotos e vídeos quiseres.</p><div class="media-buttons"><label class="upload-label">📷 Adicionar fotos<input type="file" accept="image/*" multiple onchange="uploadMedia(this)"></label><label class="upload-label">🎥 Adicionar vídeos<input type="file" accept="video/*" multiple onchange="uploadMedia(this)"></label></div><div id="mediaGrid" class="media-grid"></div></div>
+</section>
+</main>
+<script>
+const SUPABASE_URL='https://zfwrojqzoitebaytvvxa.supabase.co';
+const SUPABASE_KEY='sb_publishable_7-CKacj6-07FxsnDRJSUPQ_-hvijNYm';
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const MEDIA_BUCKET='provider-media';
+let user=null, profile=null;
+function goHome(){window.location.href='index.html'}
+async function init(){
+ const r=await supabaseClient.auth.getUser(); user=r.data.user;
+ if(!user){window.location.href='conta.html';return}
+ const {data,error}=await supabaseClient.from('providers').select('id,provider_id,category,title,description,location,whatsapp,is_featured,views,created_at').eq('provider_id',user.id).maybeSingle();
+ document.getElementById('loading').classList.add('hidden');
+ if(error){document.getElementById('createBox').classList.remove('hidden');document.getElementById('createMsg').textContent='Não foi possível carregar o perfil: '+error.message;return}
+ if(!data){document.getElementById('createBox').classList.remove('hidden');return}
+ profile=data; showManage();
+}
+function showManage(){
+ document.getElementById('manageBox').classList.remove('hidden');
+ document.getElementById('viewName').textContent=profile.title||'Profissional';document.getElementById('viewCat').textContent=profile.category||'Serviços';document.getElementById('viewLoc').textContent='📍 '+(profile.location||'Angola');document.getElementById('viewViews').textContent='👁️ '+Number(profile.views||0)+' visualizações';
+ document.getElementById('eName').value=profile.title||'';document.getElementById('eCat').value=profile.category||'Construção';document.getElementById('eLoc').value=profile.location||'';document.getElementById('ePhone').value=profile.whatsapp||'';document.getElementById('eDesc').value=profile.description||'';
+ loadServices();loadMedia();
+}
+async function createProfile(){
+ const name=pName.value.trim(),cat=pCat.value,loc=pLoc.value.trim(),phone=pPhone.value.trim(),desc=pDesc.value.trim();
+ if(!name||!loc||!phone||!desc){createMsg.textContent='Preenche todos os campos.';return}
+ const {data,error}=await supabaseClient.from('providers').insert([{provider_id:user.id,title:name,category:cat,location:loc,whatsapp:phone,description:desc,is_featured:false}]).select().single();
+ if(error){createMsg.textContent=error.message;return} profile=data;createBox.classList.add('hidden');showManage();
+}
+async function saveProfile(){
+ const {data,error}=await supabaseClient.from('providers').update({title:eName.value.trim(),category:eCat.value,location:eLoc.value.trim(),whatsapp:ePhone.value.trim(),description:eDesc.value.trim()}).eq('id',profile.id).eq('provider_id',user.id).select().single();
+ if(error){editMsg.textContent=error.message;editMsg.classList.remove('ok');return} profile=data;editMsg.textContent='Alterações guardadas com sucesso.';editMsg.classList.add('ok');showManage();
+}
+function toggleManualService(){
+ const manual=serviceSelect.value==='manual';
+ serviceManual.classList.toggle('hidden',!manual);
+ if(manual) serviceManual.focus();
+}
+async function addService(){
+ let title=serviceSelect.value==='manual'?serviceManual.value.trim():serviceSelect.value.trim();
+ if(!title){alert('Seleciona um serviço ou escolhe "Adicionar manualmente".');return}
+ const {error}=await supabaseClient.from('services').insert([{provider_id:user.id,category:profile.category,title,description:'',location:profile.location,whatsapp:profile.whatsapp,is_featured:false}]);
+ if(error){alert('Não foi possível adicionar o serviço.\n\n'+error.message);return}
+ serviceSelect.value='';serviceManual.value='';serviceManual.classList.add('hidden');loadServices();
+}
+async function loadServices(){
+ const box=servicesList;box.innerHTML='A carregar...';const {data,error}=await supabaseClient.from('services').select('id,title,category').eq('provider_id',user.id).order('created_at',{ascending:false});
+ if(error){box.innerHTML='<div class="empty">Não foi possível carregar os serviços.</div>';return} if(!data.length){box.innerHTML='<div class="empty">Ainda não adicionaste serviços.</div>';return}
+ box.innerHTML=data.map(x=>`<div class="service-row"><div><div class="service-name">${escapeHtml(x.title)}</div><div class="muted">${escapeHtml(x.category||'')}</div></div><button class="danger" onclick="deleteService('${x.id}')">Apagar</button></div>`).join('');
+}
+async function deleteService(id){if(!confirm('Apagar este serviço?'))return;await supabaseClient.from('services').delete().eq('id',id).eq('provider_id',user.id);loadServices()}
+async function uploadMedia(input){const files=[...input.files];if(!files.length)return;for(const file of files){const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');const path=user.id+'/'+Date.now()+'_'+Math.random().toString(36).slice(2,8)+'_'+safe;const {error}=await supabaseClient.storage.from(MEDIA_BUCKET).upload(path,file,{upsert:false});if(error){alert('Erro ao enviar '+file.name+'\n\n'+error.message);break}}input.value='';loadMedia()}
+async function loadMedia(){const grid=mediaGrid;grid.innerHTML='<div class="empty">A carregar...</div>';const {data,error}=await supabaseClient.storage.from(MEDIA_BUCKET).list(user.id,{limit:1000,sortBy:{column:'name',order:'asc'}});if(error){grid.innerHTML='<div class="empty">Não foi possível carregar a galeria.</div>';return}grid.innerHTML='';(data||[]).filter(f=>f.name&&!f.name.endsWith('/')).forEach(f=>{const path=user.id+'/'+f.name,url=supabaseClient.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl,video=/\.(mp4|webm|mov|m4v|ogg)$/i.test(f.name);const item=document.createElement('div');item.className='media-item';item.innerHTML=video?`<video src="${url}" controls></video>`:`<img src="${url}" alt="Trabalho" loading="lazy">`;const b=document.createElement('button');b.className='media-delete';b.textContent='×';b.onclick=()=>deleteMedia(path);item.appendChild(b);grid.appendChild(item)});if(!grid.children.length)grid.innerHTML='<div class="empty">Ainda não existem fotos ou vídeos.</div>'}
+async function deleteMedia(path){if(!confirm('Apagar este ficheiro?'))return;const {error}=await supabaseClient.storage.from(MEDIA_BUCKET).remove([path]);if(error){alert(error.message);return}loadMedia()}
+function openPublicProfile(){window.location.href='perfil.html?id='+encodeURIComponent(profile.id)}
+async function shareMyService(){const url=new URL('perfil.html?id='+encodeURIComponent(profile.id), window.location.href).href;const text='Confira o meu serviço no NexaServ: '+profile.title;if(navigator.share){try{await navigator.share({title:'NexaServ',text,url});return}catch(e){}}window.open('https://wa.me/?text='+encodeURIComponent(text+'\n'+url),'_blank')}
+async function logout(){await supabaseClient.auth.signOut();window.location.href='index.html'}
+function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+init();
+</script></body></html>

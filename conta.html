@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexaServ — Conta</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--primary:#111827;--accent:#f59e0b;--bg:#f5f7fb;--card:#fff;--muted:#667085;--line:#e5e7eb}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#172033;min-height:100vh}
+header{background:#fff;border-bottom:1px solid var(--line)}.nav{max-width:700px;margin:auto;padding:16px 20px;display:flex;justify-content:center}.logo{font-size:23px;font-weight:800;display:flex;align-items:center;gap:7px}.logo span{color:var(--accent)}.logo-mark{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f59e0b,#ff8a00);color:#111827;border-radius:9px;font-weight:900;font-size:19px;transform:skew(-7deg)}
+main{max-width:500px;margin:0 auto;padding:45px 20px 60px}.back{display:inline-block;border:0;background:none;color:var(--muted);font-weight:700;font-size:14px;margin-bottom:25px;cursor:pointer}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:0 8px 30px #1018280d}.tabs{display:grid;grid-template-columns:1fr 1fr;background:#f2f4f7;padding:4px;border-radius:12px;margin-bottom:26px}.tabs button{border:0;background:transparent;padding:12px;border-radius:9px;font-weight:700;color:var(--muted);cursor:pointer}.tabs button.active{background:#fff;color:var(--primary);box-shadow:0 2px 6px #10182812}.icon{font-size:35px;margin-bottom:12px}.title{font-size:27px;margin-bottom:8px}.subtitle{color:var(--muted);line-height:1.5;margin-bottom:25px}label{display:block;font-size:14px;font-weight:700;margin-bottom:7px}input{width:100%;padding:13px 14px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;margin-bottom:17px;outline:none}input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #f59e0b22}.submit{width:100%;border:0;background:var(--primary);color:#fff;padding:14px;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer}.submit:disabled{opacity:.6}.message{min-height:22px;text-align:center;margin-top:15px;font-size:14px;font-weight:600}.hint{text-align:center;color:var(--muted);font-size:13px;margin-top:18px;line-height:1.5}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="logo"><span class="logo-mark">N</span>Nexa<span>Serv</span></div></div></header>
+<main>
+<button class="back" onclick="goBack()">← Voltar</button>
+<section class="card">
+<div class="tabs"><button id="loginTab" class="active" onclick="setMode('login')">Entrar</button><button id="signupTab" onclick="setMode('signup')">Criar conta</button></div>
+<div class="icon">🔐</div>
+<h1 class="title" id="title">Entrar no NexaServ</h1>
+<p class="subtitle" id="subtitle">Entre na sua conta para continuar.</p>
+<form onsubmit="submitAuth(event)">
+<label for="email">E-mail</label><input id="email" type="email" placeholder="seuemail@exemplo.com" autocomplete="email" required>
+<label for="password">Senha</label><input id="password" type="password" placeholder="Digite a sua senha" autocomplete="current-password" minlength="6" required>
+<button class="submit" id="submit" type="submit">Entrar</button>
+</form>
+<div class="message" id="message"></div>
+<p class="hint">A criação e o início de sessão ficam nesta página. O seu perfil profissional será tratado numa página separada.</p>
+</section>
+</main>
+<script>
+const SUPABASE_URL='https://zfwrojqzoitebaytvvxa.supabase.co';
+const SUPABASE_KEY='sb_publishable_7-CKacj6-07FxsnDRJSUPQ_-hvijNYm';
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let mode='login';
+function setMode(newMode){mode=newMode;const signup=mode==='signup';document.getElementById('loginTab').classList.toggle('active',!signup);document.getElementById('signupTab').classList.toggle('active',signup);document.getElementById('title').textContent=signup?'Criar conta no NexaServ':'Entrar no NexaServ';document.getElementById('subtitle').textContent=signup?'Crie a sua conta para começar.':'Entre na sua conta para continuar.';document.getElementById('submit').textContent=signup?'Criar conta':'Entrar';document.getElementById('message').textContent='';document.getElementById('password').value='';}
+async function submitAuth(e){e.preventDefault();const email=document.getElementById('email').value.trim();const password=document.getElementById('password').value;const msg=document.getElementById('message');const btn=document.getElementById('submit');msg.textContent='';msg.style.color='#067647';btn.disabled=true;btn.textContent='Aguarde...';
+try{let result;if(mode==='signup'){result=await supabaseClient.auth.signUp({email,password});if(result.error)throw result.error;if(result.data.session){msg.textContent='Conta criada com sucesso!';setTimeout(()=>goToOwnerPage(),700)}else{msg.textContent='Conta criada. Verifique o seu e-mail para confirmar a conta.';}}
+else{result=await supabaseClient.auth.signInWithPassword({email,password});if(result.error)throw result.error;msg.textContent='Sessão iniciada com sucesso!';setTimeout(()=>goToOwnerPage(),700)}}catch(err){msg.style.color='#b42318';msg.textContent=mode==='login'?'E-mail ou senha incorretos.':err.message||'Não foi possível criar a conta.'}finally{btn.disabled=false;btn.textContent=mode==='signup'?'Criar conta':'Entrar'}}
+function goToOwnerPage(){window.location.href='dono.html'}
+function goBack(){window.location.href='index.html'}
+</script>
+</body>
+</html>

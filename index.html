@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="NexaServ — conectando você a quem sabe fazer.">
+<title>NexaServ — Conectando você a quem sabe fazer</title>
+<style>
+:root{--primary:#111827;--accent:#f59e0b;--bg:#f5f7fb;--card:#fff;--muted:#667085;--line:#e5e7eb}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#172033}
+a{text-decoration:none;color:inherit}
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.nav{max-width:1120px;margin:auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:22px;font-weight:800;display:flex;align-items:center;gap:7px}.logo span{color:var(--accent)}.logo-mark{width:31px;height:31px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f59e0b,#ff8a00);color:#111827!important;border-radius:9px;font-weight:900;font-size:19px;transform:skew(-7deg)}
+.nav button{border:0;background:var(--primary);color:#fff;padding:11px 16px;border-radius:10px;font-weight:700}
+.hero{background:linear-gradient(135deg,#111827,#25344d);color:#fff;padding:65px 20px 75px}
+.hero-inner{max-width:1120px;margin:auto}
+.badge{display:inline-block;background:#ffffff18;border:1px solid #ffffff30;padding:8px 12px;border-radius:30px;font-size:13px;margin-bottom:18px}
+h1{font-size:clamp(34px,6vw,58px);line-height:1.05;max-width:700px;margin-bottom:18px}
+.hero p{color:#d7deea;max-width:650px;font-size:17px;line-height:1.6;margin-bottom:28px}
+.search{background:#fff;padding:8px;border-radius:14px;max-width:760px;display:flex;gap:8px;box-shadow:0 15px 40px #0004}
+.search input{flex:1;border:0;outline:0;padding:15px;font-size:16px;min-width:0}
+.search button{border:0;background:var(--accent);color:#111;padding:0 22px;border-radius:10px;font-weight:800;cursor:pointer}
+main{max-width:1120px;margin:auto;padding:38px 20px 70px}
+.section-title{display:flex;justify-content:space-between;align-items:end;margin-bottom:20px}
+.section-title h2{font-size:25px}.section-title p{color:var(--muted);font-size:14px}
+.categories{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:45px}
+.category{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;cursor:pointer;transition:.2s}
+.category:hover{transform:translateY(-2px);border-color:var(--accent)}
+.icon{font-size:28px;margin-bottom:9px}.category strong{display:block}.category small{color:var(--muted)}
+.filters{display:flex;gap:8px;overflow:auto;margin-bottom:20px}
+.filter{border:1px solid var(--line);background:#fff;padding:9px 14px;border-radius:30px;white-space:nowrap;cursor:pointer}
+.filter.active{background:var(--primary);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.cover{height:170px;background:linear-gradient(135deg,#dfe5ec,#b8c2d1);display:flex;align-items:center;justify-content:center;font-size:52px}
+.card-body{padding:18px}.tag{font-size:12px;color:#8a5a00;background:#fff4d6;padding:6px 9px;border-radius:20px;display:inline-block;margin-bottom:10px}
+.card h3{margin-bottom:6px}.meta{color:var(--muted);font-size:14px;margin:4px 0}.rating{margin-top:9px;font-size:14px}
+.card-actions{display:flex;gap:8px;margin-top:15px}.card-actions a,.card-actions button{flex:1;text-align:center;border:0;padding:11px;border-radius:9px;font-weight:700;cursor:pointer}
+.contact{background:#111827;color:#fff}.profile{background:#eef1f5;color:#172033}
+.empty{display:none;padding:30px;text-align:center;color:var(--muted);background:#fff;border-radius:14px;border:1px dashed #ccd2dc}
+footer{background:#0b1220;color:#cbd5e1;padding:35px 20px}
+.footer-inner{max-width:1120px;margin:auto;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+footer strong{color:#fff}.modal{display:none;position:fixed;inset:0;background:#0008;z-index:50;padding:20px;align-items:center;justify-content:center}
+.modal.show{display:flex}.modal-box{background:#fff;border-radius:18px;max-width:520px;width:100%;padding:25px;position:relative}
+.close{position:absolute;right:16px;top:12px;border:0;background:none;font-size:25px;cursor:pointer}
+.form input,.form textarea,.form select{width:100%;padding:12px;border:1px solid var(--line);border-radius:9px;margin-top:7px;margin-bottom:13px}
+.form button{width:100%;padding:13px;border:0;border-radius:9px;background:var(--primary);color:#fff;font-weight:700}
+@media(max-width:800px){.categories{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.nav{padding:13px 15px}.hero{padding:45px 16px 55px}main{padding:30px 15px}.categories,.grid{grid-template-columns:1fr}.search{flex-direction:column;background:#fff}.search button{padding:14px}.cover{height:150px}}
+
+.logo{letter-spacing:-.5px}
+.logo span{color:#f59e0b}
+.provider-badge{display:inline-block;font-size:11px;background:#ecfdf3;color:#067647;padding:5px 8px;border-radius:20px;margin-top:8px}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header>
+<nav class="nav">
+<a class="logo" href="index.html"><span class="logo-mark">N</span>Nexa<span>Serv</span></a>
+<button onclick="goToAccount()">Oferecer meus serviços</button>
+</nav>
+</header>
+
+<section class="hero">
+<div class="hero-inner">
+<span class="badge">🇦🇴 NexaServ • Serviços em Angola</span>
+<h1>Encontre quem pode fazer o trabalho.</h1>
+<p>Descubra profissionais para construção, manutenção, tecnologia, limpeza e muito mais. Compare serviços e entre em contacto diretamente.</p>
+<div class="search">
+<input id="searchInput" type="search" placeholder="Ex.: canalizador, pladur, eletricista..." oninput="filterCards()" onkeyup="filterCards()">
+<button onclick="filterCards()">Pesquisar</button>
+</div>
+</div>
+</section>
+
+<main>
+<section>
+<div class="section-title"><div><h2>O que você precisa?</h2><p>Escolha uma categoria para começar.</p></div></div>
+<div class="categories">
+<div class="category" onclick="choose('Construção')"><div class="icon">🧱</div><strong>Construção</strong><small>Pedreiro, pladur e mais</small></div>
+<div class="category" onclick="choose('Canalização')"><div class="icon">🔧</div><strong>Canalização</strong><small>Instalações e reparações</small></div>
+<div class="category" onclick="choose('Eletricidade')"><div class="icon">⚡</div><strong>Eletricidade</strong><small>Instalações e manutenção</small></div>
+<div class="category" onclick="choose('Pintura')"><div class="icon">🎨</div><strong>Pintura</strong><small>Casas e espaços comerciais</small></div>
+<div class="category" onclick="choose('Carpintaria')"><div class="icon">🪚</div><strong>Carpintaria</strong><small>Móveis e acabamentos</small></div>
+<div class="category" onclick="choose('Limpeza')"><div class="icon">🧹</div><strong>Limpeza</strong><small>Casas e empresas</small></div>
+<div class="category" onclick="choose('Tecnologia')"><div class="icon">💻</div><strong>Tecnologia</strong><small>Computadores e redes</small></div>
+<div class="category" onclick="choose('Automóveis')"><div class="icon">🚗</div><strong>Automóveis</strong><small>Mecânica e serviços</small></div>
+</div>
+</section>
+
+<section id="professionals">
+<div class="section-title"><div><h2>Profissionais</h2><p>Os perfis em destaque aparecem primeiro.</p></div></div>
+<div class="filters">
+<button class="filter active" onclick="setFilter('Todos',this)">Todos</button>
+<button class="filter" onclick="setFilter('Construção',this)">Construção</button>
+<button class="filter" onclick="setFilter('Canalização',this)">Canalização</button>
+<button class="filter" onclick="setFilter('Eletricidade',this)">Eletricidade</button>
+<button class="filter" onclick="setFilter('Pintura',this)">Pintura</button>
+</div>
+
+<div class="grid" id="cards"></div>
+<div id="empty" class="empty">Nenhum profissional encontrado. Tente outra pesquisa.</div>
+</section>
+
+<section style="margin-top:55px;background:#fff;border-radius:18px;padding:30px;border:1px solid var(--line);">
+<div class="section-title"><div><h2>Você presta serviços?</h2><p>Crie o seu perfil e encontre novos clientes.</p></div><button onclick="goToAccount()" style="background:var(--accent);border:0;padding:13px 18px;border-radius:10px;font-weight:800;cursor:pointer">Cadastrar profissional</button></div>
+</section>
+</main>
+
+<footer><div class="footer-inner"><div><strong>NexaServ</strong><p style="margin-top:7px">Conectando você a quem sabe fazer.</p></div><div>Conectando você a quem sabe fazer.</div></div></footer>
+
+
+<script>
+const SUPABASE_URL = 'https://zfwrojqzoitebaytvvxa.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_7-CKacj6-07FxsnDRJSUPQ_-hvijNYm';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function goToAccount(){ window.location.href='conta.html'; }
+async function openAccountOrOwner(){ const {data:{user}}=await supabaseClient.auth.getUser(); window.location.href=user?'dono.html':'conta.html'; }
+
+let currentFilter='Todos';
+function choose(cat){
+ document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));
+ const btn=[...document.querySelectorAll('.filter')].find(x=>x.textContent===cat);
+ if(btn)btn.classList.add('active');
+ currentFilter=cat;
+ const search=document.getElementById('searchInput');
+ if(search) search.value='';
+ filterCards();
+ document.getElementById('professionals').scrollIntoView({behavior:'smooth'});
+}
+function setFilter(cat,btn){currentFilter=cat;document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));btn.classList.add('active');filterCards()}
+function normalizeText(value){
+ return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+}
+function filterCards(){
+ const input=document.getElementById('searchInput');
+ const q=normalizeText(input ? input.value : '');
+ const active=normalizeText(currentFilter);
+ let visible=0;
+
+ document.querySelectorAll('#cards .card').forEach(c=>{
+   const text=normalizeText(
+     (c.dataset.search||'')+' '+
+     (c.dataset.cat||'')+' '+
+     (c.innerText||'')
+   );
+   const okCat=active==='todos'||normalizeText(c.dataset.cat)===active;
+   const okSearch=!q||text.includes(q);
+   const show=okCat&&okSearch;
+
+   c.hidden=!show;
+   if(show) visible++;
+ });
+
+ const empty=document.getElementById('empty');
+ if(empty) empty.style.display=visible ? 'none' : 'block';
+}
+async function getProviders(){
+  const { data, error } = await supabaseClient
+    .from('providers')
+    .select('id,provider_id,category,title,description,location,whatsapp,is_featured,created_at')
+    .order('is_featured',{ascending:false})
+    .order('created_at',{ascending:false});
+  if(error){ console.error('Erro ao carregar profissionais:',error); return []; }
+  return data || [];
+}
+
+async function renderProviders(){
+  const grid=document.getElementById('cards');
+  if(!grid)return;
+  grid.innerHTML='';
+  const providers=await getProviders();
+  providers.forEach(p=>{
+    const article=document.createElement('article');
+    article.className='card user-provider';
+    article.dataset.cat=p.category || '';
+    article.dataset.search=((p.title||'')+' '+(p.category||'')+' '+(p.location||'')+' '+(p.description||'')+' '+(p.whatsapp||'')).toLowerCase();
+    const phone=String(p.whatsapp||'').replace(/\D/g,'').replace(/^244/,'');
+    const name=p.title || 'Profissional';
+    const cat=p.category || 'Serviços';
+    const loc=p.location || 'Angola';
+    const desc=p.description || 'Serviço profissional.';
+    const badge=p.is_featured ? '⭐ Perfil em destaque' : '✓ Novo profissional';
+    const wa=phone ? `<a class="contact" href="https://wa.me/244${phone}" target="_blank" rel="noopener">WhatsApp</a>` : '';
+    article.innerHTML=`<div class="cover">👤</div><div class="card-body"><span class="tag">${escapeHtml(cat)}</span><h3>${escapeHtml(name)}</h3><div class="meta">📍 ${escapeHtml(loc)}</div><div class="meta">${escapeHtml(desc)}</div><span class="provider-badge">${badge}</span><div class="card-actions"><button class="profile" onclick="window.location.href='perfil.html?id=${encodeURIComponent(p.id)}'">Ver perfil</button>${wa}</div></div>`;
+    grid.appendChild(article);
+  });
+  filterCards();
+}
+
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+renderProviders().catch(err=>console.error('Erro ao carregar profissionais:', err));
+</script>
+</body>
+</html>
