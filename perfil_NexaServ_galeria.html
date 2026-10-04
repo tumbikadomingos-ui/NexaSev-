@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NexaServ — Perfil</title>
+<style>
+:root{--primary:#111827;--accent:#f59e0b;--bg:#f5f7fb;--muted:#667085;--line:#e5e7eb}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#172033}
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.nav{max-width:900px;margin:auto;padding:15px 20px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:22px;font-weight:800}.logo span{color:var(--accent)}
+main{max-width:900px;margin:auto;padding:22px 16px 50px}
+.back{border:1px solid var(--line);background:#fff;padding:11px 15px;border-radius:10px;font-weight:700;cursor:pointer;margin-bottom:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;margin-bottom:18px;box-shadow:0 5px 20px #10182808}
+.hero{text-align:center}.avatar{width:100px;height:100px;border-radius:50%;margin:0 auto 15px;background:#eef2f6;display:flex;align-items:center;justify-content:center;font-size:42px}
+.tag{display:inline-block;background:#fff4db;color:#8a5a00;padding:6px 10px;border-radius:20px;font-size:13px;font-weight:800}
+.hero h1{font-size:30px;margin:10px 0}.muted{color:var(--muted);line-height:1.6}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.btn{border:0;padding:12px 17px;border-radius:10px;font-weight:800;cursor:pointer}
+.primary{background:var(--primary);color:#fff}.whatsapp{background:#16803a;color:#fff}.secondary{background:#f2f4f7}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.service{border:1px solid var(--line);border-radius:12px;padding:15px;font-weight:700}
+.gallery-title{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.gallery-count{color:var(--muted);font-size:14px}
+.media-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.media-item{position:relative;aspect-ratio:1;overflow:hidden;border-radius:14px;background:#eef1f5;cursor:pointer}
+.media-item img,.media-item video{width:100%;height:100%;object-fit:cover;background:#eee}
+.media-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;background:#111827dd;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;pointer-events:none}
+.empty{text-align:center;color:var(--muted);padding:20px}.loading{text-align:center;padding:50px;color:var(--muted)}
+.lightbox{position:fixed;inset:0;background:#000e;z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.lightbox.show{display:flex}
+.lightbox img,.lightbox video{max-width:94vw;max-height:82vh;border-radius:12px;object-fit:contain}
+.lightbox-close,.lightbox-prev,.lightbox-next{position:absolute;border:0;background:#ffffff22;color:#fff;border-radius:50%;width:44px;height:44px;font-size:28px;cursor:pointer}
+.lightbox-close{right:18px;top:18px}.lightbox-prev{left:18px;top:50%;transform:translateY(-50%)}.lightbox-next{right:18px;top:50%;transform:translateY(-50%)}
+@media(max-width:600px){.media-grid{grid-template-columns:repeat(2,1fr)}.lightbox-prev{left:8px}.lightbox-next{right:8px}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="logo">Nexa<span>Serv</span></div><button class="btn secondary" onclick="goHome()">Página principal</button></div></header>
+<main>
+<button class="back" onclick="goHome()">← Voltar</button>
+<div id="loading" class="card loading">A carregar perfil...</div>
+<div id="content" style="display:none">
+<section class="card hero">
+<div class="avatar">👤</div><span id="cat" class="tag">Serviços</span>
+<h1 id="name">Profissional</h1><p id="loc" class="muted">📍 Angola</p><p id="views" class="muted">👁️ Perfil público</p>
+<div class="actions"><a id="wa" class="btn whatsapp" target="_blank">WhatsApp</a><button class="btn primary" onclick="shareProfile()">📤 Partilhar serviço</button></div>
+</section>
+<section class="card"><h2>Sobre o profissional</h2><p id="desc" class="muted" style="margin-top:10px"></p></section>
+<section class="card"><h2>Serviços</h2><div id="services" class="grid" style="margin-top:15px"></div></section>
+<section class="card">
+<div class="gallery-title"><h2>Fotos e vídeos</h2><span id="galleryCount" class="gallery-count"></span></div>
+<div id="media" class="media-grid" style="margin-top:15px"></div>
+</section>
+</div>
+</main>
+
+<div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+<button class="lightbox-close" onclick="hideLightbox()">×</button>
+<button class="lightbox-prev" onclick="prevMedia(event)">‹</button>
+<div id="lightboxContent"></div>
+<button class="lightbox-next" onclick="nextMedia(event)">›</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://zfwrojqzoitebaytvvxa.supabase.co';
+const SUPABASE_KEY='sb_publishable_7-CKacj6-07FxsnDRJSUPQ_-hvijNYm';
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const id=new URLSearchParams(location.search).get('id');
+let profile=null,galleryItems=[],galleryIndex=0;
+
+function goHome(){location.href='index.html'}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+
+async function load(){
+ if(!id){document.getElementById('loading').textContent='Perfil não encontrado.';return}
+ const {data,error}=await supabaseClient.from('providers')
+  .select('id,provider_id,category,title,description,location,whatsapp,is_featured,views,created_at')
+  .eq('id',id).maybeSingle();
+ if(error||!data){document.getElementById('loading').textContent='Não foi possível encontrar este perfil.';return}
+ profile=data;
+ const {data:viewCount,error:viewError}=await supabaseClient.rpc('increment_provider_views',{provider_uuid:id});
+ const totalViews=!viewError&&viewCount!==null?Number(viewCount):Number(data.views||0);
+ document.getElementById('views').textContent='👁️ '+totalViews+' visualizações';
+ document.getElementById('name').textContent=data.title||'Profissional';
+ document.getElementById('cat').textContent=data.category||'Serviços';
+ document.getElementById('loc').textContent='📍 '+(data.location||'Angola');
+ document.getElementById('desc').textContent=data.description||'Este profissional ainda não adicionou uma descrição.';
+ const phone=String(data.whatsapp||'').replace(/\D/g,'').replace(/^244/,'');
+ document.getElementById('wa').href='https://wa.me/244'+phone;
+ document.getElementById('loading').style.display='none';
+ document.getElementById('content').style.display='block';
+ await loadServices();await loadMedia();
+}
+
+async function loadServices(){
+ const box=document.getElementById('services');
+ const {data}=await supabaseClient.from('services').select('id,title,description')
+  .eq('provider_id',profile.provider_id).order('created_at',{ascending:false});
+ if(!data||!data.length){box.innerHTML='<div class="empty">Nenhum serviço adicional publicado.</div>';return}
+ box.innerHTML=data.map(x=>`<div class="service"><div>${esc(x.title)}</div>${x.description?`<div class="muted" style="font-weight:400;margin-top:5px">${esc(x.description)}</div>`:''}</div>`).join('');
+}
+
+async function loadMedia(){
+ const box=document.getElementById('media');
+ if(!profile.provider_id){box.innerHTML='<div class="empty">Nenhuma mídia disponível.</div>';return}
+ const {data,error}=await supabaseClient.storage.from('provider-media').list(profile.provider_id,{limit:1000,sortBy:{column:'name',order:'asc'}});
+ if(error||!data||!data.length){box.innerHTML='<div class="empty">Nenhuma foto ou vídeo publicado.</div>';document.getElementById('galleryCount').textContent='';return}
+ galleryItems=data.filter(f=>f.name&&!f.name.endsWith('/')).map(f=>{
+  const url=supabaseClient.storage.from('provider-media').getPublicUrl(profile.provider_id+'/'+f.name).data.publicUrl;
+  return {url,video:/\.(mp4|webm|mov|m4v|ogg)$/i.test(f.name),name:f.name};
+ });
+ document.getElementById('galleryCount').textContent=galleryItems.length+' ficheiro'+(galleryItems.length===1?'':'s');
+ box.innerHTML='';
+ galleryItems.forEach((m,i)=>{
+  const item=document.createElement('div');item.className='media-item';item.onclick=()=>openMedia(i);
+  item.innerHTML=m.video?'<video muted preload="metadata" src="'+m.url+'"></video><span class="media-play">▶</span>':'<img src="'+m.url+'" alt="Foto do serviço" loading="lazy">';
+  box.appendChild(item);
+ });
+}
+
+function openMedia(i){galleryIndex=i;renderLightbox();document.getElementById('lightbox').classList.add('show');document.body.style.overflow='hidden'}
+function renderLightbox(){
+ const m=galleryItems[galleryIndex],box=document.getElementById('lightboxContent');
+ box.innerHTML=m.video?'<video controls autoplay src="'+m.url+'"></video>':'<img src="'+m.url+'" alt="Foto ampliada">';
+}
+function hideLightbox(){document.getElementById('lightbox').classList.remove('show');document.body.style.overflow=''}
+function closeLightbox(e){if(e.target.id==='lightbox')hideLightbox()}
+function prevMedia(e){e.stopPropagation();galleryIndex=(galleryIndex-1+galleryItems.length)%galleryItems.length;renderLightbox()}
+function nextMedia(e){e.stopPropagation();galleryIndex=(galleryIndex+1)%galleryItems.length;renderLightbox()}
+document.addEventListener('keydown',e=>{
+ if(!document.getElementById('lightbox').classList.contains('show'))return;
+ if(e.key==='Escape')hideLightbox();
+ if(e.key==='ArrowLeft')prevMedia(e);
+ if(e.key==='ArrowRight')nextMedia(e);
+});
+async function shareProfile(){
+ const url=location.href,text='Veja o meu serviço no NexaServ: '+(profile?.title||'meu perfil')+' — '+url;
+ if(navigator.share){try{await navigator.share({title:'NexaServ',text,url})}catch(e){}}
+ else{try{await navigator.clipboard.writeText(text);alert('Link do perfil copiado!')}catch(e){alert(text)}}
+}
+load();
+</script>
+</body>
+</html>
