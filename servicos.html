@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -6,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="NexaServ â€” conectando vocÃª a quem sabe fazer.">
 <title>NexaServ â€” Conectando vocÃª a quem sabe fazer</title>
-
 <style>
 :root{--primary:#111827;--accent:#f59e0b;--bg:#f5f7fb;--card:#fff;--muted:#667085;--line:#e5e7eb}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -42,12 +40,14 @@ main{max-width:1120px;margin:auto;padding:38px 20px 70px}
 .filter.active{background:var(--primary);color:#fff}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
-.cover{height:170px;background:linear-gradient(135deg,#dfe5ec,#b8c2d1);display:flex;align-items:center;justify-content:center;font-size:52px}
+.cover{height:180px;background:linear-gradient(135deg,#dfe5ec,#b8c2d1);display:flex;align-items:center;justify-content:center;font-size:52px;overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:cover;display:block}
 .card-body{padding:18px}
 .tag{font-size:12px;color:#8a5a00;background:#fff4d6;padding:6px 9px;border-radius:20px;display:inline-block;margin-bottom:10px}
 .card h3{margin-bottom:6px}
-.meta{color:var(--muted);font-size:14px;margin:4px 0}
-.rating{margin-top:9px;font-size:14px}
+.meta{color:var(--muted);font-size:14px;margin:6px 0;line-height:1.45}
+.provider-badge{display:inline-block;font-size:11px;background:#ecfdf3;color:#067647;padding:5px 8px;border-radius:20px;margin-top:8px}
+.featured-badge{background:#fff4d6;color:#8a5a00}
 .card-actions{display:flex;gap:8px;margin-top:15px}
 .card-actions a,.card-actions button{flex:1;text-align:center;border:0;padding:11px;border-radius:9px;font-weight:700;cursor:pointer}
 .contact{background:#111827;color:#fff}
@@ -59,23 +59,11 @@ main{max-width:1120px;margin:auto;padding:38px 20px 70px}
 footer{background:#0b1220;color:#cbd5e1;padding:35px 20px}
 .footer-inner{max-width:1120px;margin:auto;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 footer strong{color:#fff}
-.provider-badge{display:inline-block;font-size:11px;background:#ecfdf3;color:#067647;padding:5px 8px;border-radius:20px;margin-top:8px}
 @media(max-width:800px){.categories{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr 1fr}}
-@media(max-width:560px){
-.nav{padding:13px 15px}
-.hero{padding:45px 16px 55px}
-main{padding:30px 15px}
-.categories,.grid{grid-template-columns:1fr}
-.search{flex-direction:column;background:#fff}
-.search button{padding:14px}
-.cover{height:150px}
-.section-title{align-items:flex-start;flex-direction:column}
-}
+@media(max-width:560px){.nav{padding:13px 15px}.hero{padding:45px 16px 55px}main{padding:30px 15px}.categories,.grid{grid-template-columns:1fr}.search{flex-direction:column;background:#fff}.search button{padding:14px}.cover{height:170px}.section-title{align-items:flex-start;flex-direction:column}}
 </style>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-
 <body>
 <header>
 <nav class="nav">
@@ -98,13 +86,7 @@ main{padding:30px 15px}
 
 <main>
 <section>
-<div class="section-title">
-<div>
-<h2>O que vocÃª precisa?</h2>
-<p>Escolha uma categoria para comeÃ§ar.</p>
-</div>
-</div>
-
+<div class="section-title"><div><h2>O que vocÃª precisa?</h2><p>Escolha uma categoria para comeÃ§ar.</p></div></div>
 <div class="categories">
 <div class="category" onclick="choose('ConstruÃ§Ã£o')"><div class="icon">ðŸ§±</div><strong>ConstruÃ§Ã£o</strong><small>Pedreiro, pladur e mais</small></div>
 <div class="category" onclick="choose('CanalizaÃ§Ã£o')"><div class="icon">ðŸ”§</div><strong>CanalizaÃ§Ã£o</strong><small>InstalaÃ§Ãµes e reparaÃ§Ãµes</small></div>
@@ -118,13 +100,7 @@ main{padding:30px 15px}
 </section>
 
 <section id="professionals">
-<div class="section-title">
-<div>
-<h2>Profissionais</h2>
-<p>Os perfis em destaque aparecem primeiro.</p>
-</div>
-</div>
-
+<div class="section-title"><div><h2>Profissionais</h2><p>Os perfis em destaque aparecem primeiro.</p></div></div>
 <div class="filters">
 <button class="filter active" onclick="setFilter('Todos',this)">Todos</button>
 <button class="filter" onclick="setFilter('ConstruÃ§Ã£o',this)">ConstruÃ§Ã£o</button>
@@ -132,17 +108,9 @@ main{padding:30px 15px}
 <button class="filter" onclick="setFilter('Eletricidade',this)">Eletricidade</button>
 <button class="filter" onclick="setFilter('Pintura',this)">Pintura</button>
 </div>
-
-<div id="loading" class="status-message loading" role="status" aria-live="polite">
-A carregar profissionais do NexaServ...
-</div>
-
+<div id="loading" class="status-message loading" role="status" aria-live="polite">A carregar profissionais do NexaServ...</div>
 <div class="grid" id="cards" hidden></div>
-
-<div id="empty" class="empty" role="status" hidden>
-Nenhum profissional encontrado. Tente outra pesquisa.
-</div>
-
+<div id="empty" class="empty" role="status" hidden>Nenhum profissional encontrado. Tente outra pesquisa.</div>
 <div id="error" class="status-message error" role="alert" hidden>
 <strong>NÃ£o foi possÃ­vel carregar os profissionais.</strong>
 <p>Verifique a sua ligaÃ§Ã£o Ã  internet e tente novamente.</p>
@@ -150,45 +118,30 @@ Nenhum profissional encontrado. Tente outra pesquisa.
 </div>
 </section>
 
-<section style="margin-top:55px;background:#fff;border-radius:18px;padding:30px;border:1px solid var(--line);">
-<div class="section-title">
-<div>
-<h2>VocÃª presta serviÃ§os?</h2>
-<p>Crie o seu perfil e encontre novos clientes.</p>
-</div>
-<button onclick="goToAccount()" style="background:var(--accent);border:0;padding:13px 18px;border-radius:10px;font-weight:800;cursor:pointer">Cadastrar profissional</button>
-</div>
+<section style="margin-top:55px;background:#fff;border-radius:18px;padding:30px;border:1px solid var(--line)">
+<div class="section-title"><div><h2>VocÃª presta serviÃ§os?</h2><p>Crie o seu perfil e encontre novos clientes.</p></div>
+<button onclick="goToAccount()" style="background:var(--accent);border:0;padding:13px 18px;border-radius:10px;font-weight:800;cursor:pointer">Cadastrar profissional</button></div>
 </section>
 </main>
 
-<footer>
-<div class="footer-inner">
-<div>
-<strong>NexaServ</strong>
-<p style="margin-top:7px">Conectando vocÃª a quem sabe fazer.</p>
-</div>
-<div>Conectando vocÃª a quem sabe fazer.</div>
-</div>
-</footer>
+<footer><div class="footer-inner"><div><strong>NexaServ</strong><p style="margin-top:7px">Conectando vocÃª a quem sabe fazer.</p></div><div>Conectando vocÃª a quem sabe fazer.</div></div></footer>
 
 <script>
 const SUPABASE_URL='https://zfwrojqzoitebaytvvxa.supabase.co';
 const SUPABASE_KEY='sb_publishable_7-CKacj6-07FxsnDRJSUPQ_-hvijNYm';
-const supabaseClient=window.supabase?.createClient
-  ? window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY)
-  : null;
-
-function goToAccount(){
-  window.location.href='conta.html';
-}
-
+const supabaseClient=window.supabase?.createClient ? window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY) : null;
+const MEDIA_BUCKET='provider-media';
 let currentFilter='Todos';
 let providersLoaded=false;
 let totalProviders=0;
 
+function goToAccount(){window.location.href='conta.html';}
+function normalizeText(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
+function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+
 function choose(cat){
   document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));
-  const btn=[...document.querySelectorAll('.filter')].find(x=>x.textContent===cat);
+  const btn=[...document.querySelectorAll('.filter')].find(x=>normalizeText(x.textContent)===normalizeText(cat));
   if(btn)btn.classList.add('active');
   currentFilter=cat;
   const search=document.getElementById('searchInput');
@@ -196,62 +149,30 @@ function choose(cat){
   filterCards();
   document.getElementById('professionals').scrollIntoView({behavior:'smooth'});
 }
-
 function setFilter(cat,btn){
   currentFilter=cat;
   document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));
   btn.classList.add('active');
   filterCards();
 }
-
-function normalizeText(value){
-  return String(value||'')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g,'')
-    .toLowerCase()
-    .trim();
-}
-
 function filterCards(){
-  const input=document.getElementById('searchInput');
-  const q=normalizeText(input?input.value:'');
+  const q=normalizeText(document.getElementById('searchInput')?.value||'');
   const active=normalizeText(currentFilter);
   let visible=0;
-
-  document.querySelectorAll('#cards .card').forEach(c=>{
-    const text=normalizeText(
-      (c.dataset.search||'')+' '+
-      (c.dataset.cat||'')+' '+
-      (c.innerText||'')
-    );
-
-    const okCat=active==='todos'||normalizeText(c.dataset.cat)===active;
-    const okSearch=!q||text.includes(q);
-    const show=okCat&&okSearch;
-
-    c.hidden=!show;
+  document.querySelectorAll('#cards .card').forEach(card=>{
+    const text=normalizeText((card.dataset.search||'')+' '+(card.dataset.cat||'')+' '+(card.innerText||''));
+    const okCat=active==='todos'||normalizeText(card.dataset.cat)===active;
+    const show=okCat&&(!q||text.includes(q));
+    card.hidden=!show;
     if(show)visible++;
   });
-
   const empty=document.getElementById('empty');
   const grid=document.getElementById('cards');
-
-  if(!providersLoaded){
-    empty.hidden=true;
-    return;
-  }
-
-  if(totalProviders===0){
-    empty.textContent='Ainda nÃ£o existem profissionais publicados. Volte mais tarde!';
-    empty.hidden=false;
-  }else{
-    empty.textContent='Nenhum profissional encontrado. Tente outra pesquisa ou categoria.';
-    empty.hidden=visible>0;
-  }
-
+  if(!providersLoaded){empty.hidden=true;return;}
+  if(totalProviders===0){empty.textContent='Ainda nÃ£o existem profissionais publicados. Volte mais tarde!';empty.hidden=false;}
+  else{empty.textContent='Nenhum profissional encontrado. Tente outra pesquisa ou categoria.';empty.hidden=visible>0;}
   grid.hidden=totalProviders===0||visible===0;
 }
-
 function showLoading(){
   document.getElementById('loading').hidden=false;
   document.getElementById('error').hidden=true;
@@ -259,20 +180,90 @@ function showLoading(){
   document.getElementById('cards').hidden=true;
 }
 
-async function getProviders(){
-  if(!supabaseClient){
-    throw new Error('A biblioteca do Supabase nÃ£o foi carregada.');
-  }
+async function getProviderPhoto(providerId){
+  if(!providerId||!supabaseClient)return null;
+  try{
+    const {data,error}=await supabaseClient.storage.from(MEDIA_BUCKET).list(providerId,{limit:100,sortBy:{column:'name',order:'asc'}});
+    if(error||!data?.length)return null;
+    const files=data.filter(file=>file.name&&!file.name.endsWith('/')&&/\.(jpg|jpeg|png|webp|gif)$/i.test(file.name));
+    if(!files.length)return null;
+    return supabaseClient.storage.from(MEDIA_BUCKET).getPublicUrl(providerId+'/'+files[0].name).data.publicUrl||null;
+  }catch(error){console.warn('NÃ£o foi possÃ­vel carregar a fotografia do profissional:',error);return null;}
+}
 
-  const {data,error}=await supabaseClient
-    .from('providers')
+async function getProviders(){
+  if(!supabaseClient)throw new Error('A biblioteca do Supabase nÃ£o foi carregada.');
+  const {data,error}=await supabaseClient.from('providers')
     .select('id,provider_id,category,title,description,location,whatsapp,is_featured,created_at')
     .order('is_featured',{ascending:false})
     .order('created_at',{ascending:false});
-
   if(error)throw error;
-
   return data||[];
+}
+
+function createProviderCard(provider,photoUrl){
+  const article=document.createElement('article');
+  article.className='card user-provider';
+  article.dataset.cat=provider.category||'';
+  article.dataset.search=[provider.title,provider.category,provider.location,provider.description,provider.whatsapp].join(' ');
+
+  const cover=document.createElement('div');
+  cover.className='cover';
+  if(photoUrl){
+    const img=document.createElement('img');
+    img.src=photoUrl;
+    img.alt='Fotografia de '+(provider.title||'profissional');
+    img.loading='lazy';
+    img.onerror=()=>{cover.textContent='ðŸ‘¤';};
+    cover.appendChild(img);
+  }else{
+    cover.textContent='ðŸ‘¤';
+  }
+
+  const body=document.createElement('div');
+  body.className='card-body';
+  const tag=document.createElement('span');
+  tag.className='tag';
+  tag.textContent=provider.category||'ServiÃ§os';
+
+  const title=document.createElement('h3');
+  title.textContent=provider.title||'Profissional';
+
+  const location=document.createElement('div');
+  location.className='meta';
+  location.textContent='ðŸ“ '+(provider.location||'Angola');
+
+  const description=document.createElement('div');
+  description.className='meta';
+  description.textContent=provider.description||'ServiÃ§o profissional.';
+
+  const badge=document.createElement('span');
+  badge.className='provider-badge'+(provider.is_featured?' featured-badge':'');
+  badge.textContent=provider.is_featured?'â­ Perfil em destaque':'âœ“ Profissional';
+
+  const actions=document.createElement('div');
+  actions.className='card-actions';
+
+  const profileButton=document.createElement('button');
+  profileButton.className='profile';
+  profileButton.textContent='Ver perfil';
+  profileButton.onclick=()=>{window.location.href='perfil.html?id='+encodeURIComponent(provider.id);};
+  actions.appendChild(profileButton);
+
+  const phone=String(provider.whatsapp||'').replace(/\D/g,'').replace(/^244/,'');
+  if(phone){
+    const wa=document.createElement('a');
+    wa.className='contact';
+    wa.href='https://wa.me/244'+phone;
+    wa.target='_blank';
+    wa.rel='noopener';
+    wa.textContent='WhatsApp';
+    actions.appendChild(wa);
+  }
+
+  body.append(tag,title,location,description,badge,actions);
+  article.append(cover,body);
+  return article;
 }
 
 async function renderProviders(){
@@ -280,7 +271,6 @@ async function renderProviders(){
   const loading=document.getElementById('loading');
   const errorBox=document.getElementById('error');
   const empty=document.getElementById('empty');
-
   providersLoaded=false;
   totalProviders=0;
   grid.innerHTML='';
@@ -288,45 +278,11 @@ async function renderProviders(){
 
   try{
     const providers=await getProviders();
-
-    providers.forEach(p=>{
-      const article=document.createElement('article');
-      article.className='card user-provider';
-      article.dataset.cat=p.category||'';
-      article.dataset.search=
-        (p.title||'')+' '+
-        (p.category||'')+' '+
-        (p.location||'')+' '+
-        (p.description||'')+' '+
-        (p.whatsapp||'');
-
-      const phone=String(p.whatsapp||'').replace(/\D/g,'').replace(/^244/,'');
-      const name=p.title||'Profissional';
-      const cat=p.category||'ServiÃ§os';
-      const loc=p.location||'Angola';
-      const desc=p.description||'ServiÃ§o profissional.';
-      const badge=p.is_featured?'â­ Perfil em destaque':'âœ“ Novo profissional';
-
-      const wa=phone
-        ? `<a class="contact" href="https://wa.me/244${phone}" target="_blank" rel="noopener">WhatsApp</a>`
-        : '';
-
-      article.innerHTML=`
-        <div class="cover">ðŸ‘¤</div>
-        <div class="card-body">
-          <span class="tag">${escapeHtml(cat)}</span>
-          <h3>${escapeHtml(name)}</h3>
-          <div class="meta">ðŸ“ ${escapeHtml(loc)}</div>
-          <div class="meta">${escapeHtml(desc)}</div>
-          <span class="provider-badge">${badge}</span>
-          <div class="card-actions">
-            <button class="profile" onclick="window.location.href='perfil.html?id=${encodeURIComponent(p.id)}'">Ver perfil</button>
-            ${wa}
-          </div>
-        </div>`;
-
-      grid.appendChild(article);
-    });
+    const cards=await Promise.all(providers.map(async provider=>{
+      const photo=await getProviderPhoto(provider.provider_id);
+      return createProviderCard(provider,photo);
+    }));
+    cards.forEach(card=>grid.appendChild(card));
 
     totalProviders=providers.length;
     providersLoaded=true;
@@ -334,11 +290,9 @@ async function renderProviders(){
     errorBox.hidden=true;
     grid.hidden=providers.length===0;
     empty.hidden=true;
-
     filterCards();
-
-  }catch(err){
-    console.error('Erro ao carregar profissionais:',err);
+  }catch(error){
+    console.error('Erro ao carregar profissionais:',error);
     providersLoaded=false;
     loading.hidden=true;
     grid.hidden=true;
@@ -346,19 +300,7 @@ async function renderProviders(){
     errorBox.hidden=false;
   }
 }
-
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g,m=>({
-    '&':'&amp;',
-    '<':'&lt;',
-    '>':'&gt;',
-    '"':'&quot;',
-    "'":'&#039;'
-  }[m]));
-}
-
 renderProviders();
 </script>
 </body>
-  </html>
-                                                        
+</html>
