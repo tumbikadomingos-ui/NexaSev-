@@ -12,7 +12,7 @@ a{color:inherit;text-decoration:none}button,input,textarea{font:inherit}button{c
 .header-inner{max-width:1180px;margin:auto;padding:10px 20px;display:flex;align-items:center;gap:20px;min-height:70px}
 .brand{font-size:25px;font-weight:800;color:var(--navy);white-space:nowrap}.brand span{color:var(--teal)}
 .main-nav{display:flex;align-items:center;justify-content:center;gap:5px;flex:1}
-.icon-btn{width:42px;height:42px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--navy);display:grid;place-items:center}
+.icon-btn{width:42px;height:42px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--navy);display:grid;place-items:center;position:relative}
 .icon-btn svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .icon-btn:hover,.icon-btn.active{background:#edf4fa;color:var(--blue);border-color:#e1ebf4}
 .header-actions{display:flex;gap:4px}.nav-wrap{position:relative}.profile-menu{display:none;position:absolute;right:0;top:49px;width:195px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:7px;box-shadow:0 12px 30px #142b4920}
@@ -37,8 +37,15 @@ h1{font-size:clamp(27px,5vw,40px);line-height:1.1;margin:0 0 10px}.hero p{color:
 .comment-form{display:flex;gap:8px;margin-top:10px}.comment-form input{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:11px}.comment-form button{border:0;border-radius:10px;background:#eaf2f9;color:var(--blue);font-weight:700;padding:0 13px}
 .empty{text-align:center;color:var(--muted);padding:28px 18px}.empty strong{display:block;color:var(--navy);margin-bottom:7px}
 .about{background:#eaf1f8;border:0}.about p{color:#53657a;line-height:1.6;margin-bottom:0}footer{max-width:900px;margin:auto;padding:0 18px 28px;color:var(--muted);font-size:13px}
-.notice{display:none;position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#142b49;color:#fff;padding:12px 16px;border-radius:12px;z-index:40;max-width:90%;text-align:center}.notice.show{display:block}
-@media(max-width:760px){.header-inner{padding:8px 10px;gap:7px;flex-wrap:wrap}.brand{font-size:22px}.main-nav{order:3;flex-basis:100%;justify-content:space-between;border-top:1px solid var(--line);padding-top:5px}.icon-btn{width:39px;height:39px}.header-actions{margin-left:auto}main{padding:18px 12px 30px}.hero{padding:24px 20px}.composer,.post{padding:14px}.search-panel{padding:0 12px 14px}.post-media{grid-template-columns:1fr}}
+.notification-wrap{position:relative}.notification-panel{display:none;position:absolute;right:-70px;top:48px;width:min(340px,calc(100vw - 24px));max-height:420px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 35px #142b4925;z-index:50;padding:12px}.notification-panel.open{display:block}
+.notification-title{font-weight:800;color:var(--navy);padding:5px 7px 10px;border-bottom:1px solid var(--line)}
+.notification-item{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid #edf0f4;background:#fff;padding:11px 8px;color:var(--navy);line-height:1.4}
+.notification-item.unread{background:#edf5fc}.notification-date{display:block;color:var(--muted);font-size:11px;padding:0 8px 8px}
+.notification-empty{padding:18px 8px;color:var(--muted);font-size:13px}
+.notification-badge{position:absolute;right:1px;top:0;min-width:18px;height:18px;padding:0 4px;border-radius:20px;background:#d93025;color:white;font-size:11px;font-weight:800;display:none;place-items:center;border:2px solid white}.notification-badge.show{display:grid}
+.post.highlight{outline:3px solid #80b8e8;transition:outline .3s}
+.notice{display:none;position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#142b49;color:#fff;padding:12px 16px;border-radius:12px;z-index:60;max-width:90%;text-align:center}.notice.show{display:block}
+@media(max-width:760px){.header-inner{padding:8px 10px;gap:7px;flex-wrap:wrap}.brand{font-size:22px}.main-nav{order:3;flex-basis:100%;justify-content:space-between;border-top:1px solid var(--line);padding-top:5px}.icon-btn{width:39px;height:39px}.header-actions{margin-left:auto}main{padding:18px 12px 30px}.hero{padding:24px 20px}.composer,.post{padding:14px}.search-panel{padding:0 12px 14px}.post-media{grid-template-columns:1fr}.notification-panel{right:-45px}}
 @media(min-width:761px){.main-nav{order:2}.header-actions{order:3}}
 </style>
 </head>
@@ -49,7 +56,7 @@ h1{font-size:clamp(27px,5vw,40px);line-height:1.1;margin:0 0 10px}.hero p{color:
 <button class="icon-btn active" aria-label="Início" title="Início" onclick="goHome()"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7M5 9v11h14V9M9 20v-7h6v7"/></svg></button>
 <button class="icon-btn" aria-label="Chat" title="Chat" onclick="showNotice('A área de Chat será disponibilizada numa próxima etapa.')"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg></button>
 <button class="icon-btn" aria-label="Guardados" title="Guardados" onclick="showNotice('A área de Guardados será disponibilizada numa próxima etapa.')"><svg viewBox="0 0 24 24"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4z"/></svg></button>
-<button class="icon-btn" aria-label="Notificações" title="Notificações" onclick="showNotice('As Notificações serão disponibilizadas numa próxima etapa.')"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button>
+<div class="notification-wrap"><button class="icon-btn" id="notificationsButton" aria-label="Notificações" title="Notificações" aria-expanded="false" onclick="toggleNotifications(this)"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="notification-badge" id="notificationBadge"></span></button><div class="notification-panel" id="notificationPanel"><div class="notification-title">Notificações</div><div id="notificationList" class="notification-empty">A carregar notificações...</div></div></div>
 <div class="nav-wrap"><button class="icon-btn" aria-label="Perfil" title="Perfil" aria-expanded="false" onclick="toggleProfileMenu(this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></button><div class="profile-menu" id="profileMenu"><a href="conta.html">A minha conta</a><a href="dono.html">Perfil profissional</a><button onclick="signOut()">Terminar sessão</button></div></div>
 <button class="icon-btn" aria-label="Sobre nós" title="Sobre nós" onclick="goAbout()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button>
 </nav><div class="header-actions">
@@ -72,7 +79,7 @@ h1{font-size:clamp(27px,5vw,40px);line-height:1.1;margin:0 0 10px}.hero p{color:
 'use strict';
 const SUPABASE_URL='https://zfwrojqzoitebaytvvxa.supabase.co',SUPABASE_KEY='sb_publishable_7-CKacj6-07FxsnDRJSUPQ_-hvijNYm',BUCKET='provider-media';
 const supabaseClient=window.supabase?.createClient(SUPABASE_URL,SUPABASE_KEY);
-let currentUser=null,currentProvider=null;const $=id=>document.getElementById(id);
+let currentUser=null,currentProvider=null,notificationChannel=null;const $=id=>document.getElementById(id);
 function showNotice(s){const e=$('notice');e.textContent=s;e.classList.add('show');clearTimeout(window.noticeTimer);window.noticeTimer=setTimeout(()=>e.classList.remove('show'),3800)}
 function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function dateLabel(s){const d=new Date(s);return isNaN(d)?'':d.toLocaleString('pt-PT',{dateStyle:'medium',timeStyle:'short'})}
@@ -80,7 +87,7 @@ function toggleSearch(){const e=$('searchPanel');e.classList.toggle('open');if(e
 function searchServices(e){e.preventDefault();const q=$('homeSearch').value.trim();location.href='servicos.html'+(q?'?q='+encodeURIComponent(q):'')}
 function openSettings(){showNotice('As definições serão organizadas numa próxima etapa.')}function goHome(){location.href='index.html'}function goAbout(){$('sobre').scrollIntoView({behavior:'smooth'})}
 function toggleProfileMenu(b){const m=$('profileMenu');m.classList.toggle('open');b.setAttribute('aria-expanded',m.classList.contains('open'))}
-document.addEventListener('click',e=>{if(!e.target.closest('.nav-wrap'))$('profileMenu').classList.remove('open')});
+document.addEventListener('click',e=>{if(!e.target.closest('.nav-wrap'))$('profileMenu').classList.remove('open');if(!e.target.closest('.notification-wrap')){$('notificationPanel')?.classList.remove('open');$('notificationsButton')?.setAttribute('aria-expanded','false')}});
 async function signOut(){const {error}=await supabaseClient.auth.signOut();if(error){showNotice('Não foi possível terminar a sessão.');return}location.href='conta.html'}
 async function getProvider(){const {data,error}=await supabaseClient.from('providers').select('id,title,category,whatsapp,provider_id').eq('provider_id',currentUser.id).maybeSingle();if(error)throw error;return data}
 function mediaHtml(url){const ext=(url.split('?')[0].split('.').pop()||'').toLowerCase(),u=escapeHtml(url);return ['mp4','webm','mov','m4v','ogv'].includes(ext)?`<video controls playsinline preload="metadata" src="${u}"></video>`:`<img loading="lazy" src="${u}" alt="Imagem da publicação">`}
@@ -89,7 +96,31 @@ async function loadFeed(){
  if(error){$('feed').innerHTML='<div class="empty"><strong>Não foi possível carregar o mural.</strong>'+escapeHtml(error.message)+'</div>';return}
  if(!data?.length){$('feed').innerHTML='<div class="empty"><strong>Ainda não há publicações.</strong>Seja o primeiro a partilhar um trabalho ou projeto.</div>';return}
  $('feed').innerHTML=data.map(p=>{const pro=p.providers||{},name=pro.title||'Profissional NexaServ',media=Array.isArray(p.media_urls)?p.media_urls:[],wa=pro.whatsapp?`<a class="text-btn" href="https://wa.me/${encodeURIComponent(String(pro.whatsapp).replace(/\D/g,''))}" target="_blank" rel="noopener">WhatsApp</a>`:'';
- return `<article class="post"><div class="post-head"><div class="avatar">${escapeHtml(name.charAt(0).toUpperCase())}</div><div><div class="post-author">${escapeHtml(name)}</div><div class="post-meta">${escapeHtml(pro.category||'Profissional')} · ${escapeHtml(dateLabel(p.created_at))}</div></div></div>${p.content?`<div class="post-text">${escapeHtml(p.content)}</div>`:''}${media.length?`<div class="post-media">${media.map(mediaHtml).join('')}</div>`:''}<div class="post-actions"><button class="text-btn" onclick="toggleComments('${escapeHtml(p.id)}')">Comentários</button>${wa}</div><div class="comments" id="comments-${escapeHtml(p.id)}" hidden><div class="comment-list">A carregar...</div><form class="comment-form" onsubmit="addComment(event,'${escapeHtml(p.id)}')"><input maxlength="1500" required placeholder="Escreva um comentário..."><button>Enviar</button></form></div></article>`}).join('');
+ return `<article class="post" id="post-${escapeHtml(p.id)}"><div class="post-head"><div class="avatar">${escapeHtml(name.charAt(0).toUpperCase())}</div><div><div class="post-author">${escapeHtml(name)}</div><div class="post-meta">${escapeHtml(pro.category||'Profissional')} · ${escapeHtml(dateLabel(p.created_at))}</div></div></div>${p.content?`<div class="post-text">${escapeHtml(p.content)}</div>`:''}${media.length?`<div class="post-media">${media.map(mediaHtml).join('')}</div>`:''}<div class="post-actions"><button class="text-btn" onclick="toggleComments('${escapeHtml(p.id)}')">Comentários</button>${wa}</div><div class="comments" id="comments-${escapeHtml(p.id)}" hidden><div class="comment-list">A carregar...</div><form class="comment-form" onsubmit="addComment(event,'${escapeHtml(p.id)}')"><input maxlength="1500" required placeholder="Escreva um comentário..."><button>Enviar</button></form></div></article>`}).join('');
+}
+async function loadNotifications(){
+ if(!currentProvider)return;
+ const list=$('notificationList'),{data,error}=await supabaseClient.from('notifications').select('id,actor_provider_id,post_id,message,is_read,created_at').eq('recipient_provider_id',currentProvider.id).order('created_at',{ascending:false}).limit(30);
+ if(error){list.textContent='Não foi possível carregar notificações.';console.error('NexaServ notifications:',error);return}
+ const rows=data||[],unread=rows.filter(n=>!n.is_read).length,badge=$('notificationBadge');
+ badge.textContent=unread>9?'9+':String(unread);badge.classList.toggle('show',unread>0);
+ if(!rows.length){list.className='notification-empty';list.textContent='Não tens notificações por enquanto.';return}
+ list.className='';
+ list.innerHTML=rows.map(n=>`<div><button class="notification-item ${n.is_read?'':'unread'}" onclick="openNotification('${escapeHtml(n.id)}','${escapeHtml(n.post_id||'')}')">${escapeHtml(n.message||'Nova notificação')}</button><small class="notification-date">${escapeHtml(dateLabel(n.created_at))}</small></div>`).join('');
+}
+function toggleNotifications(button){const panel=$('notificationPanel');panel.classList.toggle('open');button.setAttribute('aria-expanded',panel.classList.contains('open'));if(panel.classList.contains('open'))loadNotifications()}
+async function openNotification(id,postId){
+ const {error}=await supabaseClient.from('notifications').update({is_read:true}).eq('id',id).eq('recipient_provider_id',currentProvider.id);
+ if(error){showNotice('Não foi possível marcar a notificação como lida.');console.error(error);return}
+ await loadNotifications();$('notificationPanel').classList.remove('open');$('notificationsButton').setAttribute('aria-expanded','false');
+ if(postId){const target=$('post-'+postId);if(target){target.scrollIntoView({behavior:'smooth',block:'center'});target.classList.add('highlight');setTimeout(()=>target.classList.remove('highlight'),2500)}else showNotice('A publicação já não está visível no mural.')}
+}
+function subscribeNotifications(){
+ if(!currentProvider)return;
+ if(notificationChannel)supabaseClient.removeChannel(notificationChannel);
+ notificationChannel=supabaseClient.channel('nexaserv-notifications-'+currentProvider.id)
+ .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:'recipient_provider_id=eq.'+currentProvider.id},payload=>{showNotice(payload.new?.message||'Tens uma nova notificação.');loadNotifications()})
+ .subscribe(status=>{if(status==='CHANNEL_ERROR')console.warn('Realtime de notificações indisponível; a lista continua a poder ser atualizada ao abrir o sino.')});
 }
 async function toggleComments(id){const el=$('comments-'+id);el.hidden=!el.hidden;if(!el.hidden)await loadComments(id)}
 async function loadComments(id){const box=$('comments-'+id),list=box.querySelector('.comment-list'),{data,error}=await supabaseClient.from('post_comments').select('id,content,created_at,providers(title)').eq('post_id',id).order('created_at',{ascending:true});if(error){list.textContent='Não foi possível carregar comentários.';return}list.innerHTML=data.length?data.map(c=>`<div class="comment"><strong>${escapeHtml(c.providers?.title||'Profissional')}</strong><p>${escapeHtml(c.content)}</p><small>${escapeHtml(dateLabel(c.created_at))}</small></div>`).join(''):'<div class="post-meta">Ainda não há comentários.</div>'}
@@ -102,7 +133,7 @@ async function publishPost(e){e.preventDefault();const content=$('postText').val
 $('postForm').addEventListener('submit',publishPost);
 $('postFiles').addEventListener('change',()=>{$('selectedFiles').textContent=[...$('postFiles').files].map(f=>f.name).join(' · ')||'Pode adicionar fotos e vídeos à publicação.'});
 async function init(){if(!supabaseClient){location.replace('conta.html');return}const {data,error}=await supabaseClient.auth.getSession();if(error||!data.session){location.replace('conta.html');return}currentUser=data.session.user;
- try{currentProvider=await getProvider();if(currentProvider){const n=currentProvider.title||'Profissional';$('myName').textContent=n;$('myAvatar').textContent=n.charAt(0).toUpperCase()}else{$('myName').textContent='Conta sem perfil profissional';$('postText').placeholder='Crie primeiro o seu perfil profissional para poder publicar.';$('publishBtn').disabled=true}await loadFeed()}catch(err){$('feed').innerHTML='<div class="empty"><strong>Não foi possível iniciar o mural.</strong>'+escapeHtml(err.message)+'</div>'}
+ try{currentProvider=await getProvider();if(currentProvider){const n=currentProvider.title||'Profissional';$('myName').textContent=n;$('myAvatar').textContent=n.charAt(0).toUpperCase()}else{$('myName').textContent='Conta sem perfil profissional';$('postText').placeholder='Crie primeiro o seu perfil profissional para poder publicar.';$('publishBtn').disabled=true}await loadFeed();if(currentProvider){await loadNotifications();subscribeNotifications()}}catch(err){$('feed').innerHTML='<div class="empty"><strong>Não foi possível iniciar o mural.</strong>'+escapeHtml(err.message)+'</div>'}
  document.body.classList.remove('waiting')}
 $('year').textContent=new Date().getFullYear();init();
 </script></body></html>
