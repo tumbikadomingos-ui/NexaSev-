@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NexaServ — Mensagens</title>
+<title>NexaServ â€” Mensagens</title>
 <style>
 :root{--navy:#102b4e;--teal:#0b938d;--bg:#f3f6fa;--line:#e4eaf1;--muted:#718096;--white:#fff}
 *{box-sizing:border-box}
@@ -50,10 +50,10 @@ main{max-width:1100px;margin:24px auto;padding:0 16px}
 </style>
 </head>
 <body>
-<header><div class="top"><div class="brand">Nexa<span>Serv</span></div><button type="button" onclick="location.href='index.html'">Página inicial</button></div></header>
+<header><div class="top"><div class="brand">Nexa<span>Serv</span></div><button type="button" onclick="location.href='index.html'">PÃ¡gina inicial</button></div></header>
 <main>
 <div class="heading"><h1>Mensagens</h1><p>Converse diretamente com clientes e profissionais.</p></div>
-<div id="status" class="status">A verificar a sua sessão...</div>
+<div id="status" class="status">A verificar a sua sessÃ£o...</div>
 <section class="layout" id="layout">
 <aside class="sidebar">
 <div class="side-title">Conversas</div>
@@ -61,7 +61,7 @@ main{max-width:1100px;margin:24px auto;padding:0 16px}
 </aside>
 <section class="chat" id="chatPanel">
 <div class="chat-head">
-<button class="mobile-back" type="button" onclick="backToList()" aria-label="Voltar">‹</button>
+<button class="mobile-back" type="button" onclick="backToList()" aria-label="Voltar">â€¹</button>
 <div class="avatar" id="chatAvatar">N</div>
 <div><strong id="chatName">NexaServ</strong><small id="chatSub">As suas mensagens privadas</small></div>
 </div>
@@ -76,7 +76,7 @@ main{max-width:1100px;margin:24px auto;padding:0 16px}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL='https://zfwrojqzoitebaytvvxa.supabase.co';
-const SUPABASE_KEY='sb_publishable_7-CKacj6-07FxsnDRJSQ_-hvijNYm';
+const SUPABASE_KEY='sb_publishable_7-CKacj6-07FxsnDRJSUPQ_-hvijNYm';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let currentUser=null, activeConversation=null, realtimeChannel=null, conversations=[];
 const $=id=>document.getElementById(id);
@@ -88,9 +88,9 @@ function initials(name){return (String(name||'N').trim().charAt(0)||'N').toUpper
 function timeLabel(value){if(!value)return '';const d=new Date(value);return d.toLocaleString('pt-AO',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});}
 async function init(){
  const {data:{session},error}=await db.auth.getSession();
- if(error||!session){setStatus('Inicie sessão para aceder às suas mensagens.');$('conversationList').innerHTML='<div class="empty"><b>É necessário iniciar sessão</b>Entre na sua conta de cliente ou profissional para utilizar o chat.<br><br><button class="back" onclick="location.href=\'contratador.html\'">Entrar como cliente</button><br><br><button class="back" onclick="location.href=\'conta.html\'">Entrar como profissional</button></div>';return;}
+ if(error||!session){setStatus('Inicie sessÃ£o para aceder Ã s suas mensagens.');$('conversationList').innerHTML='<div class="empty"><b>Ã‰ necessÃ¡rio iniciar sessÃ£o</b>Entre na sua conta de cliente ou profissional para utilizar o chat.<br><br><button class="back" onclick="location.href=\'contratador.html\'">Entrar como cliente</button><br><br><button class="back" onclick="location.href=\'conta.html\'">Entrar como profissional</button></div>';return;}
  currentUser=session.user;
- setStatus('Sessão ativa. As suas conversas privadas aparecem abaixo.');
+ setStatus('SessÃ£o ativa. As suas conversas privadas aparecem abaixo.');
  await loadConversations();
  const params=new URLSearchParams(location.search);
  const providerId=params.get('provider');
@@ -98,9 +98,9 @@ async function init(){
 }
 async function loadConversations(){
  const {data,error}=await db.from('conversations').select('id,customer_id,provider_id,created_at,last_message_at').or('customer_id.eq.'+currentUser.id+',provider_id.eq.'+currentUser.id);
- if(error){$('conversationList').innerHTML='<div class="empty">Não foi possível carregar as conversas. '+esc(error.message)+'</div>';return;}
+ if(error){$('conversationList').innerHTML='<div class="empty">NÃ£o foi possÃ­vel carregar as conversas. '+esc(error.message)+'</div>';return;}
  conversations=data||[];
- if(!conversations.length){$('conversationList').innerHTML='<div class="empty"><b>Ainda não tem conversas</b>Quando iniciar uma conversa com um profissional ou cliente, ela aparecerá aqui.</div>';return;}
+ if(!conversations.length){$('conversationList').innerHTML='<div class="empty"><b>Ainda nÃ£o tem conversas</b>Quando iniciar uma conversa com um profissional ou cliente, ela aparecerÃ¡ aqui.</div>';return;}
  const otherIds=[...new Set(conversations.map(c=>c.customer_id===currentUser.id?c.provider_id:c.customer_id))];
  const {data:providerRows}=await db.from('providers').select('provider_id,title,category').in('provider_id',otherIds);
  const {data:profileRows}=await db.from('profiles').select('id,name').in('id',otherIds);
@@ -137,8 +137,8 @@ async function selectConversation(id){
 async function loadMessages(){
  if(!activeConversation)return;
  const {data,error}=await db.from('messages').select('id,sender_id,content,created_at').eq('conversation_id',activeConversation).order('created_at',{ascending:true});
- if(error){$('messages').innerHTML='<div class="empty">Não foi possível carregar as mensagens.</div>';return;}
- if(!data||!data.length){$('messages').innerHTML='<div class="empty">Esta conversa começou agora.<br>Envie a primeira mensagem.</div>';return;}
+ if(error){$('messages').innerHTML='<div class="empty">NÃ£o foi possÃ­vel carregar as mensagens.</div>';return;}
+ if(!data||!data.length){$('messages').innerHTML='<div class="empty">Esta conversa comeÃ§ou agora.<br>Envie a primeira mensagem.</div>';return;}
  $('messages').innerHTML=data.map(m=>`<div class="bubble ${m.sender_id===currentUser.id?'mine':''}">${esc(m.content)}<span class="time">${timeLabel(m.created_at)}</span></div>`).join('');
  $('messages').scrollTop=$('messages').scrollHeight;
 }
@@ -147,19 +147,19 @@ $('messageForm').addEventListener('submit',async e=>{
  if(!content||!activeConversation||!currentUser)return;
  $('sendButton').disabled=true;
  const {error}=await db.from('messages').insert({conversation_id:activeConversation,sender_id:currentUser.id,content});
- if(error){alert('Não foi possível enviar a mensagem: '+error.message);$('sendButton').disabled=false;return;}
+ if(error){alert('NÃ£o foi possÃ­vel enviar a mensagem: '+error.message);$('sendButton').disabled=false;return;}
  $('messageInput').value='';$('sendButton').disabled=false;
  await loadMessages();await loadConversations();
 });
 async function openOrCreateConversation(providerId){
- if(providerId===currentUser.id){setStatus('Não pode iniciar uma conversa consigo mesmo.');return;}
+ if(providerId===currentUser.id){setStatus('NÃ£o pode iniciar uma conversa consigo mesmo.');return;}
  const {data:provider,error:providerError}=await db.from('providers').select('provider_id,title').eq('provider_id',providerId).maybeSingle();
- if(providerError||!provider){setStatus('Não foi possível encontrar este profissional.');return;}
+ if(providerError||!provider){setStatus('NÃ£o foi possÃ­vel encontrar este profissional.');return;}
  const {data:existing}=await db.from('conversations').select('id').eq('customer_id',currentUser.id).eq('provider_id',providerId).maybeSingle();
  let conversationId=existing?.id;
  if(!conversationId){
    const {data,error}=await db.from('conversations').insert({customer_id:currentUser.id,provider_id:providerId}).select('id').single();
-   if(error){setStatus('Não foi possível iniciar a conversa: '+error.message);return;}
+   if(error){setStatus('NÃ£o foi possÃ­vel iniciar a conversa: '+error.message);return;}
    conversationId=data.id;
  }
  await loadConversations();
@@ -168,4 +168,4 @@ async function openOrCreateConversation(providerId){
 init();
 </script>
 </body>
-</html>
+ </html>
