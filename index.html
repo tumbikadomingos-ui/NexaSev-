@@ -98,7 +98,7 @@ h1{font-size:clamp(27px,5vw,40px);line-height:1.1;margin:0 0 10px}.hero p{color:
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 'use strict';
-const SUPABASE_URL='https://zfwrojqzoitebaytvvxa.supabase.co',SUPABASE_KEY='sb_publishable_7-CKacj6-07FxsnDRJSQ_-hvijNYm',BUCKET='provider-media';
+const SUPABASE_URL='https://zfwrojqzoitebaytvvxa.supabase.co',SUPABASE_KEY='sb_publishable_7-CKacj6-07FxsnDRJSUPQ_-hvijNYm',BUCKET='provider-media';
 const supabaseClient=window.supabase?.createClient(SUPABASE_URL,SUPABASE_KEY);
 let currentUser=null,currentProvider=null,notificationChannel=null;const $=id=>document.getElementById(id);
 function showNotice(s){const e=$('notice');e.textContent=s;e.classList.add('show');clearTimeout(window.noticeTimer);window.noticeTimer=setTimeout(()=>e.classList.remove('show'),3800)}
