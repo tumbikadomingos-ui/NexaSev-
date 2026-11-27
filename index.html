@@ -32,7 +32,7 @@ h1{font-size:clamp(27px,5vw,40px);line-height:1.1;margin:0 0 10px}.hero p{color:
 .file-hint,.post-meta{font-size:12px;color:var(--muted);margin-top:5px}.selected-files{font-size:13px;color:var(--muted);margin-top:8px;overflow-wrap:anywhere}
 .post-author{font-weight:700;color:var(--navy)}.post-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;margin:15px 0}
 .post-media{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:12px 0}.post-media img,.post-media video{width:100%;max-height:420px;object-fit:cover;border-radius:11px;background:#111}
-.post-actions{display:flex;gap:15px;border-top:1px solid var(--line);padding-top:12px;margin-top:12px}.text-btn{border:0;background:transparent;color:var(--blue);font-weight:700;padding:5px 0}
+.post-actions{display:flex;gap:15px;border-top:1px solid var(--line);padding-top:12px;margin-top:12px}.text-btn{border:0;background:transparent;color:var(--blue);font-weight:700;padding:5px 0}.like-btn{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--muted);font-weight:700;padding:5px 0;cursor:pointer}.like-btn.liked{color:var(--blue)}.like-count{font-size:13px;color:var(--muted)}
 .comments{border-top:1px solid var(--line);margin-top:12px;padding-top:12px}.comment{padding:9px 0;border-bottom:1px solid #f0f2f5}.comment strong{font-size:13px;color:var(--navy)}.comment p{margin:5px 0;white-space:pre-wrap}.comment small{font-size:11px;color:var(--muted)}
 .comment-form{display:flex;gap:8px;margin-top:10px}.comment-form input{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:11px}.comment-form button{border:0;border-radius:10px;background:#eaf2f9;color:var(--blue);font-weight:700;padding:0 13px}
 .empty{text-align:center;color:var(--muted);padding:28px 18px}.empty strong{display:block;color:var(--navy);margin-bottom:7px}
@@ -231,13 +231,6 @@ async function loadFeed(){
   </article>`;
  }).join('');
  }
- async function loadFeed(){
- const {data,error}=await supabaseClient.from('posts').select('id,provider_id,content,media_urls,created_at,providers(id,title,category,whatsapp)').order('created_at',{ascending:false}).limit(50);
- if(error){$('feed').innerHTML='<div class="empty"><strong>NÃ£o foi possÃ­vel carregar o mural.</strong>'+escapeHtml(error.message)+'</div>';return}
- if(!data?.length){$('feed').innerHTML='<div class="empty"><strong>Ainda nÃ£o hÃ¡ publicaÃ§Ãµes.</strong>Seja o primeiro a partilhar um trabalho ou projeto.</div>';return}
- $('feed').innerHTML=data.map(p=>{const pro=p.providers||{},name=pro.title||'Profissional NexaServ',media=Array.isArray(p.media_urls)?p.media_urls:[],wa=pro.whatsapp?`<a class="text-btn" href="https://wa.me/${encodeURIComponent(String(pro.whatsapp).replace(/\D/g,''))}" target="_blank" rel="noopener">WhatsApp</a>`:'';
- return `<article class="post" id="post-${escapeHtml(p.id)}"><div class="post-head"><div class="avatar">${escapeHtml(name.charAt(0).toUpperCase())}</div><div><div class="post-author">${escapeHtml(name)}</div><div class="post-meta">${escapeHtml(pro.category||'Profissional')} Â· ${escapeHtml(dateLabel(p.created_at))}</div></div></div>${p.content?`<div class="post-text">${escapeHtml(p.content)}</div>`:''}${media.length?`<div class="post-media">${media.map(mediaHtml).join('')}</div>`:''}<div class="post-actions"><button class="text-btn" onclick="toggleComments('${escapeHtml(p.id)}')">ComentÃ¡rios</button>${wa}</div><div class="comments" id="comments-${escapeHtml(p.id)}" hidden><div class="comment-list">A carregar...</div><form class="comment-form" onsubmit="addComment(event,'${escapeHtml(p.id)}')"><input maxlength="1500" required placeholder="Escreva um comentÃ¡rio..."><button>Enviar</button></form></div></article>`}).join('');
-}
 async function loadNotifications(){
  if(!currentProvider)return;
  const list=$('notificationList'),{data,error}=await supabaseClient.from('notifications').select('id,actor_provider_id,post_id,message,is_read,created_at').eq('recipient_provider_id',currentProvider.id).order('created_at',{ascending:false}).limit(30);
