@@ -112,7 +112,126 @@ document.addEventListener('click',e=>{if(!e.target.closest('.nav-wrap'))$('profi
 async function signOut(){const {error}=await supabaseClient.auth.signOut();if(error){showNotice('Não foi possível terminar a sessão.');return}location.href='conta.html'}
 async function getProvider(){const {data,error}=await supabaseClient.from('providers').select('id,title,category,whatsapp,provider_id').eq('provider_id',currentUser.id).maybeSingle();if(error)throw error;return data}
 function mediaHtml(url){const ext=(url.split('?')[0].split('.').pop()||'').toLowerCase(),u=escapeHtml(url);return ['mp4','webm','mov','m4v','ogv'].includes(ext)?`<video controls playsinline preload="metadata" src="${u}"></video>`:`<img loading="lazy" src="${u}" alt="Imagem da publicação">`}
+
+async function toggleLike(postId,button){
+ if(!currentUser){
+  showNotice('Inicie sessão para gostar de uma publicação.');
+  return;
+ }
+ if(button.disabled)return;
+
+ const wasLiked=button.dataset.liked==='true';
+ const oldCount=Number(button.dataset.count||0);
+ button.disabled=true;
+
+ try{
+  if(!wasLiked){
+   const {data:existing,error:checkError}=await supabaseClient
+    .from('post_likes').select('id')
+    .eq('post_id',postId)
+    .eq('user_id',currentUser.id)
+    .maybeSingle();
+
+   if(checkError)throw checkError;
+
+   if(existing){
+    button.dataset.liked='true';
+    button.classList.add('liked');
+    button.textContent='♥ Gostei';
+    return;
+   }
+  }
+
+  const result=wasLiked
+   ?await supabaseClient.from('post_likes').delete()
+     .eq('post_id',postId).eq('user_id',currentUser.id)
+   :await supabaseClient.from('post_likes').insert({
+     post_id:postId,user_id:currentUser.id
+    });
+
+  if(result.error)throw result.error;
+
+  const liked=!wasLiked;
+  const count=Math.max(0,oldCount+(liked?1:-1));
+
+  button.dataset.liked=String(liked);
+  button.dataset.count=String(count);
+  button.classList.toggle('liked',liked);
+  button.textContent=liked?'♥ Gostei':'♡ Gostar';
+
+  const counter=$('like-count-'+postId);
+  if(counter)counter.textContent=count+' '+(count===1?'Gosto':'Gostos');
+
+ }catch(err){
+  showNotice('Não foi possível registar o gosto. Tente novamente.');
+  console.error('NexaServ like:',err);
+ }finally{
+  button.disabled=false;
+ }
+}
+
 async function loadFeed(){
+ const {data,error}=await supabaseClient.from('posts')
+  .select('id,provider_id,content,media_urls,created_at,providers(id,title,category,whatsapp)')
+  .order('created_at',{ascending:false}).limit(50);
+
+ if(error){
+  $('feed').innerHTML='<div class="empty"><strong>Não foi possível carregar o mural.</strong>'+escapeHtml(error.message)+'</div>';
+  return;
+ }
+
+ if(!data?.length){
+  $('feed').innerHTML='<div class="empty"><strong>Ainda não há publicações.</strong>Seja o primeiro a partilhar um trabalho ou projeto.</div>';
+  return;
+ }
+
+ const ids=data.map(p=>p.id);
+ const {data:likes,error:likesError}=await supabaseClient.from('post_likes')
+  .select('post_id,user_id').in('post_id',ids);
+
+ if(likesError)console.error('Erro ao carregar gostos:',likesError);
+
+ const counts={},mine=new Set();
+ (likes||[]).forEach(l=>{
+  counts[l.post_id]=(counts[l.post_id]||0)+1;
+  if(currentUser&&l.user_id===currentUser.id)mine.add(l.post_id);
+ });
+
+ $('feed').innerHTML=data.map(p=>{
+  const pro=p.providers||{};
+  const name=pro.title||'Profissional NexaServ';
+  const media=Array.isArray(p.media_urls)?p.media_urls:[];
+  const count=counts[p.id]||0;
+  const liked=mine.has(p.id);
+  const wa=pro.whatsapp
+   ?`<a class="text-btn" href="https://wa.me/${encodeURIComponent(String(pro.whatsapp).replace(/\D/g,''))}" target="_blank" rel="noopener">WhatsApp</a>`
+   :'';
+
+  return `<article class="post" id="post-${escapeHtml(p.id)}">
+   <div class="post-head">
+    <div class="avatar">${escapeHtml(name.charAt(0).toUpperCase())}</div>
+    <div><div class="post-author">${escapeHtml(name)}</div>
+    <div class="post-meta">${escapeHtml(pro.category||'Profissional')} · ${escapeHtml(dateLabel(p.created_at))}</div></div>
+   </div>
+   ${p.content?`<div class="post-text">${escapeHtml(p.content)}</div>`:''}
+   ${media.length?`<div class="post-media">${media.map(mediaHtml).join('')}</div>`:''}
+   <div class="post-actions">
+    <button class="text-btn like-btn ${liked?'liked':''}" data-liked="${liked}" data-count="${count}" onclick="toggleLike('${escapeHtml(p.id)}',this)">${liked?'♥ Gostei':'♡ Gostar'}</button>
+    <span class="like-count" id="like-count-${escapeHtml(p.id)}">${count} ${count===1?'Gosto':'Gostos'}</span>
+    <button class="text-btn" onclick="toggleComments('${escapeHtml(p.id)}')">Comentários</button>
+    ${wa}
+   </div>
+   <div class="comments" id="comments-${escapeHtml(p.id)}" hidden>
+    <div class="comment-list">A carregar...</div>
+    <form class="comment-form" onsubmit="addComment(event,'${escapeHtml(p.id)}')">
+     <input maxlength="1500" required placeholder="Escreva um comentário...">
+     <button>Enviar</button>
+    </form>
+   </div>
+  </article>`;
+ }).join('');
+ }
+ async function loadFeed(){
  const {data,error}=await supabaseClient.from('posts').select('id,provider_id,content,media_urls,created_at,providers(id,title,category,whatsapp)').order('created_at',{ascending:false}).limit(50);
  if(error){$('feed').innerHTML='<div class="empty"><strong>Não foi possível carregar o mural.</strong>'+escapeHtml(error.message)+'</div>';return}
  if(!data?.length){$('feed').innerHTML='<div class="empty"><strong>Ainda não há publicações.</strong>Seja o primeiro a partilhar um trabalho ou projeto.</div>';return}
